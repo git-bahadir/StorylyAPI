@@ -1,7 +1,7 @@
 from typing import List, Optional
 from ninja import NinjaAPI
-from stories.models import Story
-from stories.schema import StorySchema, NotFoundSchema
+from stories.models import Story, Event
+from stories.schema import StorySchema, EventSchema, NotFoundSchema
 from django.core.cache import cache
 from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
@@ -10,7 +10,7 @@ CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
 api = NinjaAPI()
 
-@api.get("/{app_token}", response={200: StorySchema, 404: NotFoundSchema})
+@api.get("stories/{app_token}", response={200: StorySchema, 404: NotFoundSchema})
 def get_stories(request, app_token: str):
     try:
         story = Story.objects.get(id=app_token)
@@ -22,7 +22,7 @@ def get_stories(request, app_token: str):
 
 
 
-@api.get("/cached/{app_token}", response={200: StorySchema, 404: NotFoundSchema})
+@api.get("stories/cached/{app_token}", response={200: StorySchema, 404: NotFoundSchema})
 def cached_sample(request, app_token: str):
     cached_story = cache.get(app_token)
     if cached_story:
@@ -36,3 +36,20 @@ def cached_sample(request, app_token: str):
         return 200, story
     except Story.DoesNotExist:
         return 404, {'message': 'Story not found'}
+
+
+
+@api.post("event/{app_token}", response={201: EventSchema})
+def create_event(request, app_token: str, event: EventSchema):
+
+    story = Story.objects.get(id=app_token)
+
+    created_event = Event(
+        event_type=event.event_type,
+        user_id=event.user_id,
+        story_id=story.id, #change to event.story_id
+        app_id=app_token
+    )
+
+    created_event.save()
+    return 201, created_event

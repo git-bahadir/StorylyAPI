@@ -1,16 +1,9 @@
-from datetime import date, datetime, time
 from typing import List
 from ninja import Schema, ModelSchema, Field
-from stories.models import Story, App, Metadata
+from stories.models import App, Metadata
 from ninja.orm import create_schema
-from pydantic import BaseModel
 
 AppSchema = create_schema(App)
-
-#MetdataSchema = create_schema(Metadata)
-
-#StorySchema = create_schema(Story)
-
 
 class MetadataSchema(ModelSchema):
     class Config:
@@ -22,6 +15,10 @@ class StorySchema(Schema):
     app_id: int = Field(alias="app.id")
     ts: int
 
+class EventSchema(Schema):
+    event_type: str
+    story: int = Field(alias="story_id")
+    user_id: int
 
 class NotFoundSchema(Schema):
     message: str
