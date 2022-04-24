@@ -1,0 +1,7 @@
+version: "3.3"
+
+services:
+  redis-server: # name of the third service
+    image: redis # specify image to build container from
+    ports:
+      - "6379:6379" # specify port forewarding
