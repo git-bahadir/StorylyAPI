@@ -16,8 +16,6 @@ source ./venv/bin/activate
 
 yapılicaklar
 - apache ableri not al
-- dockerizela
 - test yaz
-- freeze requirements and instructions ekle
 - kafka streams
 
