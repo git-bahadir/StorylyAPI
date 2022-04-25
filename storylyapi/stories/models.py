@@ -17,3 +17,4 @@ class Event(models.Model):
     user_id = models.IntegerField()
     story = models.ForeignKey(Story, related_name='event', on_delete=models.CASCADE)
     app = models.ForeignKey(App, related_name='event', on_delete=models.CASCADE)
+    count = models.IntegerField()

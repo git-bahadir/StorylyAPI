@@ -15,7 +15,12 @@ class StorySchema(Schema):
     app_id: int = Field(alias="app.id")
     ts: int
 
-class EventSchema(Schema):
+class EventSchemaIn(Schema):
+    event_type: str
+    story: int = Field(alias="story_id")
+    user_id: int
+
+class EventSchemaOut(Schema):
     event_type: str
     story: int = Field(alias="story_id")
     user_id: int
