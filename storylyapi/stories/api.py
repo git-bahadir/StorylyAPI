@@ -1,4 +1,4 @@
-from typing import List, Optional
+from datetime import datetime
 from ninja import NinjaAPI
 from stories.models import Story, Event
 from stories.schema import StorySchema, EventSchemaIn, EventSchemaOut, NotFoundSchema
@@ -6,7 +6,7 @@ from django.core.cache import cache
 from django.conf import settings
 from django.core.cache.backends.base import DEFAULT_TIMEOUT
 
-from django.db.models import Count, F, Value
+from django.db.models import F
  
 CACHE_TTL = getattr(settings, 'CACHE_TTL', DEFAULT_TIMEOUT)
 
@@ -41,39 +41,32 @@ def cached_sample(request, app_token: str):
 
 
 
-@api.post("event/{app_token}", response={201: EventSchemaOut})
+@api.post("event/{app_token}", response={201: EventSchemaOut, 404: NotFoundSchema})
 def create_event(request, app_token: str, event: EventSchemaIn):
-    filtered_events = Event.objects.filter(
-        app=app_token,
-        event_type=event.event_type,
-        story=event.story
-    )
+    if Story.objects.filter(app_id=app_token, id=event.story).exists():
 
-    if not filtered_events:
-        created_event = Event(
+        filtered_events = Event.objects.filter(
+            app=app_token,
             event_type=event.event_type,
-            user_id=event.user_id,
-            story_id=event.story,
-            app_id=app_token,
-            count=1
+            story=event.story,
+            date=datetime.now().date()
         )
 
-        created_event.save()
+        if not filtered_events:
+            created_event = Event(
+                event_type=event.event_type,
+                story_id=event.story,
+                app_id=app_token,
+                count=1
+            )
 
-        return 201, created_event
+            created_event.save()
+
+            return 201, created_event
+
+        else:
+            filtered_events.update(count=F('count') + 1)
+            return 201, Event.objects.get(id=filtered_events.first().id)
 
     else:
-        filtered_events.update(count=F('count') + 1)
-        return 201, Event.objects.get(id=filtered_events.first().id)
-
-
-
-"""
-sadece filterla sonra sumı arttır
-
-
-aggregate ederken story_idden bağlı olan app_idsini çek sonra countu koy dbye sadece
-date e göre zaten dbde dateli tutuyor
-
-o dau kısmı için kafka streams lazım
-"""
+        return 404, {'message': 'Story that is to be related with the event not found'}

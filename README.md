@@ -13,3 +13,10 @@ create virtual env
 python3 -m venv .
 source ./venv/bin/activate
 
+
+yapılicaklar
+- apache ableri not al
+- dockerizela
+- test yaz
+- kafka streams
+
