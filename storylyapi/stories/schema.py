@@ -3,6 +3,8 @@ from ninja import Schema, ModelSchema, Field
 from stories.models import App, Metadata
 from ninja.orm import create_schema
 
+from datetime import date
+
 AppSchema = create_schema(App)
 
 class MetadataSchema(ModelSchema):
@@ -23,7 +25,8 @@ class EventSchemaIn(Schema):
 class EventSchemaOut(Schema):
     event_type: str
     story: int = Field(alias="story_id")
-    user_id: int
+    count: int
+    date: date
 
 class NotFoundSchema(Schema):
     message: str
