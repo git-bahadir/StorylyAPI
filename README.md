@@ -19,4 +19,3 @@ yapılicaklar
 - test yaz
 - kafka streams
 
-email global denedim
