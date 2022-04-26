@@ -16,6 +16,5 @@ source ./venv/bin/activate
 
 yapılicaklar
 - apache ableri not al
-- test yaz
 - kafka streams
 
