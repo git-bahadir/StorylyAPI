@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -92,6 +93,9 @@ CACHES = {
         }
     }
 }
+
+if 'test' in sys.argv:
+    CACHES['default'] = {'BACKEND': 'django.core.cache.backends.dummy.DummyCache'}
 
 
 # Password validation
